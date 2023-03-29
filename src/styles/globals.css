@@ -54,3 +54,15 @@ input[type='submit'] {
     border: 0;
     padding: 1rem 2rem;
 }
+
+a {
+    color: var(--foreground-color);
+    text-decoration: none;
+}
+
+.card {
+    background: var(--background-color-accent);
+    border-radius: 0.25rem;
+    padding: 1rem;
+    margin: 1rem 0;
+}
