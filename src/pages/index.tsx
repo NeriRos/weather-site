@@ -1,0 +1,17 @@
+import React from 'react'
+import Layout from '@/components/Layout'
+
+const HomePage = () => {
+    return (
+        <Layout>
+            <div>
+                <h1>Cities</h1>
+                <main>
+                    City list
+                </main>
+            </div>
+        </Layout>
+    )
+}
+
+export default HomePage
