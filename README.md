@@ -14,12 +14,12 @@ the [OpenWeatherMap](https://openweathermap.org/) API.
 - Using Prisma for database management for its simplicity and flexibility.
 - Sqlite as lightweight database - all data exists in the api and this site just shows it.
 - ContextProvider for state management because its simple and easy to use.
-- Node cron for scheduling tasks.
+- Vercel for hosting and scheduling tasks.
 
 **Architecture**
 
-- Cities and Forecasts are different apis for better separation of concerns.
-- Running cron jobs as child_processes to avoid blocking the main thread.
+- Cities and Forecasts are different modules for better separation of concerns.
+- Running cron jobs in Vercel to avoid blocking the main thread and easy management.
 
 ## Getting started
 
@@ -41,13 +41,23 @@ npm install
 ### 2. Create and seed the database
 
 Run the following command to create the SQLite database file and seed it with dummy data. \
-This also creates the `city` and `forecast` tables that are defined in the prisma scheme:
+This also creates the `City` and `Forecast` tables that are defined in the prisma scheme:
 
 ```bash
 npx prisma migrate dev --name init
 ```
 
 ### 3. Start the app
+
+For the entire project with the cron job functionality, you need to create a Vercel
+account [here](https://vercel.com/signup) and
+run the app with vercel dev.
+
+```bash
+vercel dev
+```
+
+For just the fully functioning app without cron jobs, you can run it with npm:
 
 ```bash
 npm run dev

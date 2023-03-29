@@ -33,6 +33,15 @@ body {
 
 button {
     cursor: pointer;
+    background: none;
+    margin: 0;
+    font-size: 16px;
+    font-family: inherit;
+    background: var(--primary-color);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    border: none;
 }
 
 input,
@@ -65,4 +74,11 @@ a {
     border-radius: 0.25rem;
     padding: 1rem;
     margin: 1rem 0;
+}
+
+.card .card-header {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    border-bottom: 0.125rem solid rgba(0, 0, 0, 0.1);
 }
