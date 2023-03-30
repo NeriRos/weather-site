@@ -66,10 +66,12 @@ npm run dev
 The app is now running, navigate to [`http://localhost:3000/`](http://localhost:3000/) in your
 browser to explore its UI.
 
-<details><summary>Expand for a tour through the UI of the site</summary>
+## The UI
 
 ### 1. Home page
 
-coming soon...
+![](https://i.imgur.com/pYhRTkI.png)
 
-</details>
+### 2. City page
+
+![](https://i.imgur.com/lmytUQf.png)
