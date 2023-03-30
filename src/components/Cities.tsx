@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from "react";
+import React, {ChangeEvent, ChangeEventHandler, FC, useEffect, useState} from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {Weather} from "@/lib/cities";
@@ -14,6 +14,11 @@ export type CitiesProps = {
 }
 export const Cities: FC<CitiesProps> = ({cities}) => {
     const [loading, setLoading] = useState(false)
+    const [filteredCities, setFilteredCities] = useState(cities)
+    const searchRef = React.useRef<HTMLInputElement>(null);
+    const [search, setSearch] = useState<string>("");
+
+    const SEARCH_DEBOUNCE_TIME = 0;
 
     const refresh = async () => {
         setLoading(true);
@@ -22,10 +27,24 @@ export const Cities: FC<CitiesProps> = ({cities}) => {
         setLoading(false);
     }
 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (searchRef.current?.value === search) {
+                setFilteredCities(cities.filter(city => city.city_name.toLowerCase().includes(search.toLowerCase())))
+            }
+        }, SEARCH_DEBOUNCE_TIME)
+
+        return () => {
+            clearTimeout(timer);
+        }
+    }, [search])
+
     return (
         <>
+            <input placeholder={"Search city"} type={"text"} ref={searchRef}
+                   onChange={e => setSearch(e.target.value)}/>
             <ul>
-                {cities.map(city => (
+                {filteredCities.map(city => (
                     <li key={city.city_id}>
                         <Link href={`/city/${city.city_id}`} passHref={true}>
                             <div className={"card"}>
@@ -63,9 +82,11 @@ export const Cities: FC<CitiesProps> = ({cities}) => {
                 `}</style>
             </ul>
 
-            {!loading ? <button onClick={refresh}>Refresh Forecasts (WORKS AS CRON WITH
-                    VERCEL)</button> :
-                <span>Loading...</span>}
+            {
+                !loading ? <button onClick={refresh}>Refresh Forecasts (WORKS AS CRON WITH
+                        VERCEL)</button> :
+                    <span>Loading...</span>
+            }
         </>
     )
 }
