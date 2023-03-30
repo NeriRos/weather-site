@@ -10,7 +10,7 @@ type ForecastDayData = {
 };
 
 export const getFiveDayForecast = async (cityId: number) => {
-    const forecasts = await prisma.forecast.findMany({
+    return await prisma.forecast.findMany({
         where: {
             city_id: cityId
         },
@@ -18,8 +18,6 @@ export const getFiveDayForecast = async (cityId: number) => {
             dt: 'asc'
         },
     });
-
-    return forecasts;
 }
 
 export const groupForecastByDate = (forecasts: Forecast[]) => {
@@ -84,4 +82,9 @@ export const cleanOldForecasts = async (date: Date) => {
             }
         }
     })
+}
+
+export const getCurrentForecast = async (lat: number, lon: number) => {
+    const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${process.env.NEXT_PUBLIC_OPENWEATHERMAP_API_KEY}&units=${process.env.NEXT_PUBLIC_DEFAULT_MEASURE_UNIT}`)
+    return await response.json();
 }

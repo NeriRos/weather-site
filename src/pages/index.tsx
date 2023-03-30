@@ -1,7 +1,7 @@
 import React, {FC, useState} from 'react'
 import Layout from '@/components/Layout'
 import {Cities, CitiesProps} from "@/components/Cities";
-import {getCities} from "@/lib/cities";
+import {getCities, populateCityForecast} from "@/lib/cities";
 
 export type HomeProps = {
     cities: CitiesProps['cities']
@@ -23,9 +23,14 @@ const HomePage: FC<HomeProps> = ({cities}) => {
 export const getStaticProps = async () => {
     const cities = await getCities()
 
+    const citiesWithForecast = await Promise.all(cities.map(async city => {
+        return await populateCityForecast(city)
+    }))
+
+
     return {
         props: {
-            cities
+            cities: citiesWithForecast
         },
     }
 }

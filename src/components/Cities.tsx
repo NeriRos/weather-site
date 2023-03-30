@@ -1,10 +1,15 @@
-import React, {FC, useState} from "react";
+import React, {FC, useEffect, useState} from "react";
 import Link from "next/link";
+import Image from "next/image";
+import {Weather} from "@/lib/cities";
+import {Forecast} from ".prisma/client";
 
 export type CitiesProps = {
     cities: {
         city_id: string
         city_name: string
+        weather: Weather
+        forecast: Forecast
     }[]
 }
 export const Cities: FC<CitiesProps> = ({cities}) => {
@@ -12,6 +17,7 @@ export const Cities: FC<CitiesProps> = ({cities}) => {
 
     const refresh = async () => {
         setLoading(true);
+        alert("Refreshing forecasts for all cities");
         await refreshForecasts();
         setLoading(false);
     }
@@ -21,11 +27,20 @@ export const Cities: FC<CitiesProps> = ({cities}) => {
             <ul>
                 {cities.map(city => (
                     <li key={city.city_id}>
-                        <div className={"card"}>
-                            <Link href={`/city/${city.city_id}`}>
-                                {city.city_name}
-                            </Link>
-                        </div>
+                        <Link href={`/city/${city.city_id}`} passHref={true}>
+                            <div className={"card"}>
+                                <div className={"card-header"}>
+                                    {city.city_name}
+                                </div>
+                                <div className={"card-body"}>
+                                    {city.weather.description}
+                                    <Image alt={city.weather.main}
+                                           src={`https://openweathermap.org/img/wn/${city.weather.icon}.png`}
+                                           width={30} height={30}/>
+                                    {city.forecast.temp}°C
+                                </div>
+                            </div>
+                        </Link>
                     </li>
                 ))}
 
@@ -37,8 +52,13 @@ export const Cities: FC<CitiesProps> = ({cities}) => {
                     padding: 0;
                   }
 
-                  li {
-                    margin: 5px;
+                  li + li {
+                    margin-left: 10px;
+                  }
+
+                  .card-body {
+                    display: flex;
+                    align-items: center;
                   }
                 `}</style>
             </ul>

@@ -16,8 +16,8 @@ export const Forecasts: FC<ForecastsProps> = ({forecasts}) => {
                             <div className={"card-header"}>
                                 {forecast.dt.getHours()}:{forecast.dt.getMinutes() > 10 ? forecast.dt.getMinutes() : "0" + forecast.dt.getMinutes()}
                             </div>
-                            <div className={"forecast-details"}>
-                                <span>Temp: {forecast.temp}</span>
+                            <div className={"card-body"}>
+                                <span>Temp: {forecast.temp}°C</span>
                                 <span>Humidity: {forecast.humidity}</span>
                             </div>
                         </div>
@@ -39,13 +39,13 @@ export const Forecasts: FC<ForecastsProps> = ({forecasts}) => {
                 scroll-snap-align: start;
               }
 
-              .forecast-details {
+              .card-body {
                 display: flex;
                 flex-direction: column;
                 justify-content: space-between;
               }
 
-              .forecast-details span {
+              .card-body span {
                 font-size: 0.8rem;
                 padding: 2px 0;
               }
