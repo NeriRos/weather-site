@@ -4,7 +4,7 @@ import {GetStaticPropsContext} from "next";
 import {FC, useState} from "react";
 import {City} from ".prisma/client";
 import {Forecasts, ForecastsProps} from "@/components/Forecasts";
-import {getFiveDayForecast} from "@/lib/forecasts";
+import {getFiveDayForecast, groupForecastByDate} from "@/lib/forecasts";
 
 export const getStaticPaths = async () => {
     const cities = await getCities()
@@ -38,7 +38,7 @@ export const getStaticProps = async ({params}: GetStaticPropsContext) => {
         }
     }
 
-    const forecast = await getFiveDayForecast(cityId);
+    const forecast = groupForecastByDate(await getFiveDayForecast(cityId));
 
     return {
         props: {
@@ -59,7 +59,6 @@ const CityPage: FC<CityProps> = ({city, forecast: forecast}) => {
         <Layout>
             <div>
                 <h1>{city.city_name}</h1>
-                <p>{city.city_timeZone}</p>
                 <main>
                     <Forecasts forecasts={forecast}/>
                 </main>

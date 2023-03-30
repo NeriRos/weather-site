@@ -25,4 +25,6 @@ model Forecast {
   humidity Int
   city_id  Int
   city     City     @relation(fields: [city_id], references: [city_id])
+
+  @@unique([city_id, dt])
 }

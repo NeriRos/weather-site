@@ -1,21 +1,5 @@
 import prisma from "@/lib/prisma";
-
-export const getFiveDayForecast = async (cityId: number) => {
-    return prisma.forecast.findMany({
-        where: {
-            city_id: cityId
-        },
-        orderBy: {
-            dt: 'asc'
-        }
-    })
-}
-
-export const pullFiveDayForecast = async (lat: number, lon: number) => {
-    const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${process.env.NEXT_PUBLIC_OPENWEATHERMAP_API_KEY}&units=${process.env.NEXT_PUBLIC_DEFAULT_MEASURE_UNIT}`)
-    const data = await response.json();
-    return mapForecastDays(data.list);
-}
+import {Forecast} from ".prisma/client";
 
 type ForecastDayData = {
     dt: Date;
@@ -24,6 +8,41 @@ type ForecastDayData = {
     temp_max: number;
     humidity: number;
 };
+
+export const getFiveDayForecast = async (cityId: number) => {
+    const forecasts = await prisma.forecast.findMany({
+        where: {
+            city_id: cityId
+        },
+        orderBy: {
+            dt: 'asc'
+        },
+    });
+
+    return forecasts;
+}
+
+export const groupForecastByDate = (forecasts: Forecast[]) => {
+    const forecastByDays: { [date: string]: Forecast[] } = {};
+
+    for (const forecast of forecasts) {
+        const date = forecast.dt.toISOString().split('T')[0];
+
+        if (forecastByDays[date]) {
+            forecastByDays[date].push(forecast);
+        } else {
+            forecastByDays[date] = [forecast];
+        }
+    }
+
+    return forecastByDays;
+}
+
+export const pullFiveDayForecast = async (lat: number, lon: number) => {
+    const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${process.env.NEXT_PUBLIC_OPENWEATHERMAP_API_KEY}&units=${process.env.NEXT_PUBLIC_DEFAULT_MEASURE_UNIT}`)
+    const data = await response.json();
+    return mapForecastDays(data.list);
+}
 
 export const mapForecastDays = (days: any[]): ForecastDayData[] => {
     return days.map((item) => ({
@@ -37,10 +56,19 @@ export const mapForecastDays = (days: any[]): ForecastDayData[] => {
 
 export const saveForecastDays = async (cityId: number, days: ForecastDayData[]) => {
     await Promise.all(days.map(async (day) => {
-        await prisma.forecast.create({
-            data: {
-                city_id: cityId,
+        await prisma.forecast.upsert({
+            where: {
+                city_id_dt: {
+                    city_id: cityId,
+                    dt: day.dt
+                }
+            },
+            update: {
                 ...day
+            },
+            create: {
+                ...day,
+                city_id: cityId
             },
         })
     }))
@@ -49,7 +77,7 @@ export const saveForecastDays = async (cityId: number, days: ForecastDayData[]) 
 }
 
 export const cleanOldForecasts = async (date: Date) => {
-    await prisma.forecast.deleteMany({
+    return await prisma.forecast.deleteMany({
         where: {
             dt: {
                 lte: date
